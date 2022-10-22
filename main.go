@@ -8,18 +8,18 @@ import (
 	"net/http"
 	"os"
 
+	// import this package ..
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
+	"github.com/joho/godotenv" // import this package
 )
 
 func main() {
-	// env
+
 	errEnv := godotenv.Load()
 	if errEnv != nil {
 		panic("Failed to load env file")
 	}
-
 	// initial DB
 	mysql.DatabaseInit()
 
@@ -31,40 +31,16 @@ func main() {
 	routes.RouteInit(r.PathPrefix("/api/v1").Subrouter())
 
 	//path file
-	r.PathPrefix("/uploads").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
+	r.PathPrefix("/uploads").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads")))) // add this code
 
+	// Setup allowed Header, Method, and Origin for CORS on this below code ...
 	var AllowedHeaders = handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	var AllowedMethods = handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "PATCH", "DELETE"})
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
-	// var CONFIG_SMTP_HOST = "smtp.gmail.com"
-	// var CONFIG_SMTP_PORT = 587
-	// var CONFIG_SENDER_NAME = "DumbMerch <demo.dumbways@gmail.com>"
-	// var CONFIG_AUTH_EMAIL = os.Getenv("EMAIL_SYSTEM")
-	// var CONFIG_AUTH_PASSWORD = os.Getenv("PASSWORD_SYSTEM")
-
-	// mailer := gomail.NewMessage()
-	// mailer.SetHeader("From", CONFIG_SENDER_NAME)
-	// mailer.SetHeader("To", "jody.septiawan5@gmail.com")
-	// mailer.SetHeader("Subject", "Transaction Status")
-	// mailer.SetBody("text/html", "<h1> Pisang Coklat<h1>")
-
-	// dialer := gomail.NewDialer(
-	// 	CONFIG_SMTP_HOST,
-	// 	CONFIG_SMTP_PORT,
-	// 	CONFIG_AUTH_EMAIL,
-	// 	CONFIG_AUTH_PASSWORD,
-	// )
-
-	// err := dialer.DialAndSend(mailer)
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
-
-	// log.Println("Mail sent!")
-
-	// var port = "5000"
 	var port = os.Getenv("PORT")
 	fmt.Println("server running localhost:" + port)
+
+	// Embed the setup allowed in 2 parameter on this below code ...
 	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
